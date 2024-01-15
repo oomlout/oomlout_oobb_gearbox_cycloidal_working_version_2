@@ -31,8 +31,8 @@ def make_scad(**kwargs):
     if True:
         #filter = ""
         #filter = "drive_shaft_output_inner"
-        filter = "inner_rotor_lobes"
-        #filter = "outer_rotor_main"
+        #filter = "inner_rotor_lobes"
+        filter = "outer_rotor_main"
         #filter = "outer_rotor_outer_drive_shaft"
 
         #kwargs["save_type"] = "none"
@@ -40,9 +40,9 @@ def make_scad(**kwargs):
         
         kwargs["overwrite"] = True
         
-        kwargs["modes"] = ["3dpr", "laser", "true"]
+        #kwargs["modes"] = ["3dpr", "laser", "true"]
         #kwargs["modes"] = ["3dpr"]
-        #kwargs["modes"] = ["laser"]
+        kwargs["modes"] = ["laser"]
 
     # default variables
     if True:

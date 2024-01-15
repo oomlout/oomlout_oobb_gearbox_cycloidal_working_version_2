@@ -11,7 +11,7 @@ union() {
 				}
 				difference() {
 					union() {
-						translate(v = [100, 0, 0]) {
+						translate(v = [180, 0, 0]) {
 							rotate(a = [180, 0, 0]) {
 								difference() {
 									union() {
@@ -571,7 +571,7 @@ union() {
 				}
 				difference() {
 					union() {
-						translate(v = [100, 0, 0]) {
+						translate(v = [180, 0, 0]) {
 							rotate(a = [180, 0, 0]) {
 								difference() {
 									union() {
