@@ -311,6 +311,7 @@ def get_inner_rotor_drive_shaft(thing, **kwargs):
     
 def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
 
+    prepare_print = kwargs.get("prepare_print", False)
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
@@ -361,40 +362,21 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
     if True:
         offset = 20
         pos1 = copy.deepcopy(pos)
-        pos1[2] += -depth/2    
-        pos13 = copy.deepcopy(pos1)
-        pos13[1] += offset
-        poss.append(pos13)
-        pos14 = copy.deepcopy(pos1)
-        pos14[1] += -offset
-        poss.append(pos14)
+        pos1[2] += -depth/2  
+        xy = []
+        xy.append([18.478,7.654,0])  
+        xy.append([7.654,-18.478,0])
+        xy.append([-18.478,-7.654,0])
+        xy.append([-7.654,18.478,0])
+        for p in xy:
+            pos11 = copy.deepcopy(pos1)
+            pos11[0] += p[0]
+            pos11[1] += p[1]
+            pos11[2] += p[2]
+            poss.append(pos11)
     p3["pos"] = poss
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
-
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_screw_countersunk"
-    p3["radius_name"] = "m3"
-    p3["depth"] = depth
-    p3["nut_include"] = True
-    p3["zz"] = "top"
-    p3["rot"] = [0,180,0]
-    poss = []
-    if True:
-        offset = 20
-        pos1 = copy.deepcopy(pos)
-        pos1[2] += -depth/2    
-        pos11 = copy.deepcopy(pos1)
-        #do all four permutations
-        pos11[0] += offset
-        poss.append(pos11)
-        pos12 = copy.deepcopy(pos1)
-        pos12[0] += -offset
-        poss.append(pos12)
-    p3["pos"] = poss
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
+    p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)    
 
     
     #add oobb holes
@@ -426,28 +408,29 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
         poss.append(pos14)
     p3["pos"] = poss
     p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
+    #oobb_base.append_full(thing,**p3)
 
-    #put into a rotation object
-    components_second = copy.deepcopy(thing["components"])
-    return_value_2 = {}
-    return_value_2["type"]  = "rotation"
-    return_value_2["typetype"]  = "p"
-    pos1 = copy.deepcopy(pos)
-    pos1[0] += 100
-    return_value_2["pos"] = pos1
-    return_value_2["rot"] = [180,0,0]
-    return_value_2["objects"] = components_second
-    
-    thing["components"].append(return_value_2)
+    if prepare_print:
+        #put into a rotation object
+        components_second = copy.deepcopy(thing["components"])
+        return_value_2 = {}
+        return_value_2["type"]  = "rotation"
+        return_value_2["typetype"]  = "p"
+        pos1 = copy.deepcopy(pos)
+        pos1[0] += 100
+        return_value_2["pos"] = pos1
+        return_value_2["rot"] = [180,0,0]
+        return_value_2["objects"] = components_second
+        
+        thing["components"].append(return_value_2)
 
 
-    #add slice # top
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "n"
-    p3["shape"] = f"oobb_slice"
-    #p3["m"] = "#"
-    oobb_base.append_full(thing,**p3)
+        #add slice # top
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_slice"
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
     
 def get_outer_rotor_main(thing, **kwargs):
  
@@ -548,6 +531,39 @@ def get_outer_rotor_main(thing, **kwargs):
     pos1 = copy.deepcopy(pos)
     pos1[2] += -20
     p3["pos"] = pos1
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)
+
+    #add bearing plate connection
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_screw_countersunk"
+    p3["radius_name"] = "m3"
+    p3["depth"] = 25
+    p3["nut_include"] = False
+    p3["zz"] = "top"
+    poss = []
+    if True:
+        pos1 = copy.deepcopy(pos)
+        pos1[2] += depth
+        pos11 = copy.deepcopy(pos1)
+        pos11[0] += 22.5
+        pos11[1] += 30
+        poss.append(pos11)
+        pos12 = copy.deepcopy(pos1)
+        pos12[0] += -22.5
+        pos12[1] += -30
+        poss.append(pos12)
+        p3["pos"] = poss
+        pos13 = copy.deepcopy(pos1)
+        pos13[0] += 30
+        pos13[1] += -22.5
+        poss.append(pos13)
+        pos14 = copy.deepcopy(pos1)
+        pos14[0] += -30
+        pos14[1] += 22.5
+        poss.append(pos14)
+    p3["pos"] = poss
     #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)
 
