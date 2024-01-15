@@ -31,36 +31,39 @@ def make_scad(**kwargs):
     if True:
         #filter = ""
         #filter = "drive_shaft_output_inner"
-        #filter = "inner_rotor_lobes"
+        filter = "inner_rotor_lobes"
         #filter = "outer_rotor_main"
-        filter = "outer_rotor_outer_drive_shaft"
+        #filter = "outer_rotor_outer_drive_shaft"
 
-        kwargs["save_type"] = "none"
-        #kwargs["save_type"] = "all"
+        #kwargs["save_type"] = "none"
+        kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
-        #kwargs["modes"] = ["3dpr", "laser", "true"]
-        kwargs["modes"] = ["3dpr"]
+        kwargs["modes"] = ["3dpr", "laser", "true"]
+        #kwargs["modes"] = ["3dpr"]
         #kwargs["modes"] = ["laser"]
 
     # default variables
     if True:
         kwargs["size"] = "oobb"
-        kwargs["width"] = 10
-        kwargs["height"] = 10
+        kwargs["width"] = 12
+        kwargs["height"] = 12
         kwargs["thickness"] = 6
 
     # project_variables
     if True:
         #cycloidal ones
-        kwargs["lobe_number"] = 60        
+        kwargs["lobe_number"] = 79        
         kwargs["lobe_radius"] = 3/2
         kwargs["radius_offset"] = 0.75
         kwargs["radius_output_drive_pins"] = 2.5
         #size ones
-        rotor_thickness = 8
-        kwargs["rotor_thickness"] = rotor_thickness
+        thickness_inner_rotor = 8
+        kwargs["thickness_inner_rotor"] = thickness_inner_rotor
+        thickness_outer_rotor = 12
+        kwargs["thickness_outer_rotor"] = thickness_outer_rotor
+
     
     # declare parts
     if True:
@@ -72,15 +75,14 @@ def make_scad(**kwargs):
         
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = rotor_thickness
+        p3["thickness"] = thickness_inner_rotor
         part["kwargs"] = p3
         part["name"] = "inner_rotor_drive_shaft"
         parts.append(part)
 
         part = copy.deepcopy(part_default)
-        p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = rotor_thickness
-        p3["thickness"] = 12
+        p3 = copy.deepcopy(kwargs)        
+        p3["thickness"] = thickness_outer_rotor
         part["kwargs"] = p3
         part["name"] = "outer_rotor_inner_drive_shaft"
         parts.append(part)
@@ -88,13 +90,14 @@ def make_scad(**kwargs):
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
         part["kwargs"] = p3
+        p3["thickness"] = thickness_outer_rotor
         part["kwargs"] = copy.deepcopy(kwargs)
         part["name"] = "outer_rotor_outer_drive_shaft"
         parts.append(part)
 
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
-        p3["thickness"] = rotor_thickness
+        p3["thickness"] = thickness_inner_rotor
         part["kwargs"] = p3
         part["name"] = "inner_rotor_lobes"
         parts.append(part)
@@ -311,12 +314,12 @@ def get_inner_rotor_drive_shaft(thing, **kwargs):
     
 def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
 
-    prepare_print = kwargs.get("prepare_print", False)
+    prepare_print = kwargs.get("prepare_print", True)
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
     #pos[2] += -20
-    depth = 8
+    depth = kwargs.get("thickness", 3)
 
     #add _cylinder
     p3 = copy.deepcopy(kwargs)
@@ -375,7 +378,7 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
             pos11[2] += p[2]
             poss.append(pos11)
     p3["pos"] = poss
-    p3["m"] = "#"
+    #p3["m"] = "#"
     oobb_base.append_full(thing,**p3)    
 
     
@@ -383,32 +386,59 @@ def get_outer_rotor_outer_drive_shaft(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
     p3["shape"] = f"oobb_hole"
-    p3["radius_name"] = "m3"
-    #p3["depth"] = depth
+    p3["radius_name"] = "m3"        
     poss = []
     if True:
-        offset = 15.556        
+        pos1 = copy.deepcopy(pos)        
+        xy = []
+        xy.append([22.5,0,0])  
+        xy.append([0,22.5,0])
+        xy.append([-22.5,0,0])
+        xy.append([0,-22.5,0])
+        for p in xy:
+            pos11 = copy.deepcopy(pos1)
+            pos11[0] += p[0]
+            pos11[1] += p[1]
+            pos11[2] += p[2]
+            poss.append(pos11)
+    p3["pos"] = poss
+    #p3["m"] = "#"
+    oobb_base.append_full(thing,**p3)   
+    p4 = copy.deepcopy(p3)
+    p4["shape"] = f"oobb_nut" 
+    p4["zz"] = "middle"
+    #p4["overhang"] = True # not needed here and not quite working in opsc
+    #p4["m"] = "#"
+    oobb_base.append_full(thing,**p4)
+
+    #add drive pins    
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "n"
+    p3["shape"] = f"oobb_screw_countersunk"
+    p3["radius_name"] = "m2d5"
+    p3["depth"] = depth
+    p3["nut_include"] = True
+    p3["zz"] = "top"
+    p3["rot"] = [0,180,0]
+    poss = []
+    if True:        
         pos1 = copy.deepcopy(pos)
-        #pos1[2] += -depth/2
-        pos11 = copy.deepcopy(pos1)
-        pos11[0] += offset
-        pos11[1] += offset
-        poss.append(pos11)
-        pos12 = copy.deepcopy(pos1)
-        pos12[0] += -offset
-        pos12[1] += offset
-        poss.append(pos12)
-        pos13 = copy.deepcopy(pos1)
-        pos13[0] += offset
-        pos13[1] += -offset
-        poss.append(pos13)
-        pos14 = copy.deepcopy(pos1)
-        pos14[0] += -offset
-        pos14[1] += -offset
-        poss.append(pos14)
+        pos1[2] += -depth/2  
+        xy = []
+        shift = 15.556
+        xy.append([shift,shift,0])
+        xy.append([-shift,shift,0])
+        xy.append([-shift,-shift,0])
+        xy.append([shift,-shift,0])
+        for p in xy:
+            pos11 = copy.deepcopy(pos1)
+            pos11[0] += p[0]
+            pos11[1] += p[1]
+            pos11[2] += p[2]
+            poss.append(pos11)
     p3["pos"] = poss
     p3["m"] = "#"
-    #oobb_base.append_full(thing,**p3)
+    oobb_base.append_full(thing,**p3) 
 
     if prepare_print:
         #put into a rotation object
@@ -445,8 +475,7 @@ def get_outer_rotor_main(thing, **kwargs):
     radius_pin = kwargs.get("lobe_radius", 6/2)
     depth = kwargs.get("thickness", 3)
 
-    outer_rotor_radius = lobe_number*radius_offset + radius_pin
-    outer_rotor_radius += 5
+    outer_rotor_radius = lobe_number*radius_offset + radius_pin    
     
 
 
@@ -466,7 +495,7 @@ def get_outer_rotor_main(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_plate"
-    p3["width"] = 9
+    p3["width"] = 11
     p3["height"] = 1
     p3["depth"] = depth
     p3["holes"] = ["top","bottom"]    
@@ -485,7 +514,7 @@ def get_outer_rotor_main(thing, **kwargs):
     p3["type"] = "p"
     p3["shape"] = f"oobb_plate"
     p3["width"] = 1
-    p3["height"] = 9
+    p3["height"] = 11
     p3["depth"] = depth
     p3["holes"] = ["left","right"]    
     #p3["m"] = "#"
@@ -571,6 +600,7 @@ def get_outer_rotor_main(thing, **kwargs):
 
 def get_inner_rotor_lobes(thing, **kwargs):
   
+    width = kwargs.get("width", 12)
     pos = kwargs.get("pos", [0, 0, 0])
     lobe_number = kwargs.get("lobe_number", 6)
     radius_offset = kwargs.get("radius_offset", 1.5)
@@ -701,7 +731,7 @@ def get_inner_rotor_lobes(thing, **kwargs):
         return_value_2["type"]  = "rotation"
         return_value_2["typetype"]  = "p"
         pos1 = copy.deepcopy(pos)
-        pos1[0] += 100
+        pos1[0] += width * 15
         return_value_2["pos"] = pos1
         return_value_2["rot"] = [180,0,0]
         return_value_2["objects"] = components_second
