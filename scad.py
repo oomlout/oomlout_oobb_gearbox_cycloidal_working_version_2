@@ -2,6 +2,7 @@ import copy
 import opsc
 import oobb
 import oobb_base
+import math
 
 def main(**kwargs):
     make_scad(**kwargs)
